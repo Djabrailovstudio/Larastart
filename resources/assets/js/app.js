@@ -8,19 +8,63 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-import VueRouter from 'vue-router'
+import moment from 'moment';
+import {Form, HasError, AlertError} from 'vform';
+import VueRouter from 'vue-router';
 
-Vue.use(VueRouter)
+window.Form = Form;
+Vue.component(HasError.name, HasError);
+Vue.component(AlertError.name, AlertError);
 
+Vue.use(VueRouter);
+
+import VueProgressBar from 'vue-progressbar';
+const options = {
+  color: '#bffaf3',
+  failedColor: '#874b4b',
+  thickness: '5px',
+  transition: {
+    speed: '0.2s',
+    opacity: '0.6s',
+    termination: 300
+  },
+  autoRevert: true,
+  location: 'top',
+  inverse: false
+};
+Vue.use(VueProgressBar, options)
+
+import Swal from 'sweetalert2';
+window.swal = Swal;
+
+const Toast = swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000
+});
+window.toast = Toast;
+
+
+window.fire=new Vue();
 
 let routes = [
     { path: '/dashboard', component: require('./components/Dashboard.vue') },
-    { path: '/profile', component: require('./components/Profile.vue') }
+    { path: '/developer', component: require('./components/Developer.vue') },
+    { path: '/profile', component: require('./components/Profile.vue') },
+    { path: '/users', component: require('./components/Users.vue') },
   ]
 
   const router = new VueRouter({
     mode: 'history',
     routes // short for `routes: routes`
+  })
+
+  Vue.filter('upText', function(text){
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  })
+  Vue.filter('myDate', function(created){
+    return moment(created).format('D MMMM YYYY');
   })
 
 /**
@@ -30,6 +74,21 @@ let routes = [
  */
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
+
+Vue.component(
+  'passport-clients',
+  require('./components/passport/Clients.vue')
+);
+
+Vue.component(
+  'passport-authorized-clients',
+  require('./components/passport/AuthorizedClients.vue')
+);
+
+Vue.component(
+  'passport-personal-access-tokens',
+  require('./components/passport/PersonalAccessTokens.vue')
+);
 
 const app = new Vue({
     el: '#app',
